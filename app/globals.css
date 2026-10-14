@@ -1,0 +1,273 @@
+@import "tailwindcss";
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+:root {
+  --black: #000000;
+  --navy-950: #030a1f;
+  --navy-800: #0a1a48;
+  --navy-600: #1d3a9e;
+  --navy-400: #4f7bff;
+  --ice: #b7c9ff;
+  --radius-xl: 2rem;
+  --radius-lg: 1.5rem;
+  --radius-md: 1rem;
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--black);
+  color: #e6ecff;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--navy-400);
+  color: #fff;
+}
+
+/* ---------- Latar: hitam + cahaya navy yang bergerak pelan ---------- */
+.scene {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse at 20% 0%, var(--navy-800), transparent 55%),
+    radial-gradient(ellipse at 100% 100%, var(--navy-950), transparent 60%),
+    var(--black);
+  overflow: hidden;
+}
+.scene .orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: 0.55;
+  animation: drift 18s ease-in-out infinite alternate;
+}
+.scene .orb:nth-child(1) {
+  width: 32rem; height: 32rem; top: -8rem; left: -6rem;
+  background: var(--navy-600);
+}
+.scene .orb:nth-child(2) {
+  width: 26rem; height: 26rem; bottom: -6rem; right: -4rem;
+  background: var(--navy-400);
+  opacity: 0.3;
+  animation-duration: 24s;
+  animation-direction: alternate-reverse;
+}
+.scene .orb:nth-child(3) {
+  width: 18rem; height: 18rem; top: 40%; left: 55%;
+  background: #12308a;
+  animation-duration: 30s;
+}
+@keyframes drift {
+  to { transform: translate3d(4rem, 3rem, 0) scale(1.15); }
+}
+
+/* ---------- Kaca ---------- */
+.glass {
+  position: relative;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.09),
+    rgba(255, 255, 255, 0.02)
+  );
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 24px 60px -24px rgba(0, 0, 0, 0.9);
+}
+
+/* ---------- Border gradasi (dengan mask, sudut tetap tumpul) ---------- */
+.gborder::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(120, 160, 255, 0.85),
+    rgba(255, 255, 255, 0.06) 40%,
+    rgba(29, 58, 158, 0.9)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+/* Saat hover/fokus, border jadi navy yang lebih tua */
+.gborder-live:hover::before,
+.gborder-live:focus-within::before {
+  background: linear-gradient(
+    135deg,
+    #2f55c9,
+    rgba(255, 255, 255, 0.04) 40%,
+    #0e2268
+  );
+}
+
+/* ---------- Animasi masuk (berurutan lewat --i) ---------- */
+.rise {
+  opacity: 0;
+  animation: rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(22px) scale(0.97); filter: blur(6px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+
+/* Gerakan kartu */
+.lift {
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s;
+}
+.lift:hover {
+  transform: scale(1.04);
+  z-index: 1;
+  box-shadow:
+    inset 0 0 0 999px rgba(0, 8, 40, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 30px 70px -20px rgba(0, 0, 0, 0.9);
+}
+
+/* ---------- Tombol ---------- */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.4rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.3s, background 0.3s, opacity 0.2s;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0) scale(0.95); }
+.btn:disabled { opacity: 0.6; pointer-events: none; }
+
+.btn-primary {
+  color: #fff;
+  background: linear-gradient(135deg, var(--navy-400), var(--navy-600));
+  box-shadow: 0 10px 30px -10px rgba(79, 123, 255, 0.7);
+}
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.7s;
+}
+.btn-primary:hover::after { transform: translateX(120%); }
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.btn-ghost:hover { background: rgba(255, 255, 255, 0.12); }
+
+.btn-danger {
+  background: rgba(255, 70, 90, 0.12);
+  border: 1px solid rgba(255, 90, 110, 0.35);
+  color: #ffb3bd;
+}
+.btn-danger:hover { background: rgba(255, 70, 90, 0.25); }
+
+/* ---------- Input ---------- */
+.field {
+  width: 100%;
+  padding: 0.8rem 1.1rem;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s, background 0.3s, transform 0.2s;
+}
+.field::placeholder { color: rgba(183, 201, 255, 0.45); }
+.field:focus {
+  border-color: var(--navy-400);
+  background: rgba(79, 123, 255, 0.08);
+  box-shadow: 0 0 0 4px rgba(79, 123, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+/* ---------- Chip kategori ---------- */
+.chip {
+  padding: 0.45rem 1.1rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.25s;
+}
+.chip:hover { background: rgba(255, 255, 255, 0.12); transform: translateY(-2px); }
+.chip[data-active="true"] {
+  background: linear-gradient(135deg, var(--navy-400), var(--navy-600));
+  border-color: transparent;
+  color: #fff;
+}
+
+/* Placeholder gambar */
+.ph {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  font-size: 4rem;
+  font-weight: 700;
+  color: rgba(183, 201, 255, 0.35);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(79, 123, 255, 0.45), transparent 60%),
+    linear-gradient(160deg, var(--navy-800), var(--black));
+}
+
+.shine-text {
+  background: linear-gradient(100deg, #fff 20%, var(--ice) 45%, var(--navy-400) 70%, #fff 90%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: sheen 6s linear infinite;
+}
+@keyframes sheen { to { background-position: 200% center; } }
+
+:focus-visible {
+  outline: 2px solid var(--ice);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
